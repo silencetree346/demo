@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            color: #666;
+        }
+
+        .tab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff3838;
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #26d068;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #333;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-decoration: none;
+            color: #999;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .sub-tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+
+        .sub-tab-button:hover {
+            color: #667eea;
+        }
+
+        .sub-tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .sub-content {
+            display: none;
+        }
+
+        .sub-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .sub-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sub-section-header h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 管理员配置</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('event')">
+                📊 事件分类管理
+            </button>
+            <button class="tab-button" onclick="switchTab('datasource')">
+                💾 数据源管理
+            </button>
+        </div>
+
+        <div id="eventTab" class="tab-content active">
+            <div class="content-box">
+                <div class="section-header">
+                    <h2>事件分类管理</h2>
+                </div>
+
+                <div class="sub-tabs">
+                    <button class="sub-tab-button active" onclick="switchSubTab('eventType')">
+                        事件类型
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('industry')">
+                        行业
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('entity')">
+                        实体
+                    </button>
+                </div>
+
+                <div id="eventTypeContent" class="sub-content active">
+                    <div class="sub-section-header">
+                        <h3>事件类型</h3>
+                        <button class="btn btn-primary" onclick="openModal('eventTypeModal')">
+                            + 新增事件类型
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>类型名称</th>
+                                <th>描述</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventTypeTableBody">
+                            <tr>
+                                <td>舆情</td>
+                                <td>舆情事件信息</td>
+                                <td>2026-02-14 10:30</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>行业资讯</td>
+                                <td>行业相关资讯信息</td>
+                                <td>2026-02-14 09:15</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="industryContent" class="sub-content">
+                    <div class="sub-section-header">
+                        <h3>行业</h3>
+                        <button class="btn btn-primary" onclick="openModal('industryModal')">
+                            + 新增行业
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>行业名称</th>
+                                <th>描述</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="industryTableBody">
+                            <tr>
+                                <td>咖啡茶饮行业</td>
+                                <td>咖啡茶饮相关行业</td>
+                                <td>2026-02-14 11:00</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>供应链行业</td>
+                                <td>供应链相关行业</td>
+                                <td>2026-02-14 10:45</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>人工智能行业</td>
+                                <td>人工智能相关行业</td>
+                                <td>2026-02-13 15:30</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="entityContent" class="sub-content">
+                    <div class="sub-section-header">
+                        <h3>实体</h3>
+                        <button class="btn btn-primary" onclick="openModal('entityModal')">
+                            + 新增实体
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>实体名称</th>
+                                <th>描述</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="entityTableBody">
+                            <tr>
+                                <td>星巴克</td>
+                                <td>友商</td>
+                                <td>2026-02-14 11:20</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>库迪</td>
+                                <td>友商</td>
+                                <td>2026-02-14 10:50</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="datasourceTab" class="tab-content">
+            <div class="content-box">
+                <div class="section-header">
+                    <h2>数据源管理</h2>
+                    <button class="btn btn-primary" onclick="openModal('datasourceModal')">
+                        + 添加数据源
+                    </button>
+                </div>
+
+                <table id="datasourceTable">
+                    <thead>
+                        <tr>
+                            <th>网址</th>
+                            <th>类型</th>
+                            <th>行业分类</th>
+                            <th>实体分类</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="datasourceTableBody">
+                        <tr>
+                            <td>https://www.starbucks.com.cn</td>
+                            <td>网址</td>
+                            <td>咖啡茶饮行业</td>
+                            <td>星巴克</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary btn-sm" onclick="editDatasource(this)">编辑</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteDatasource(this)">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>-</td>
+                            <td>APP</td>
+                            <td>供应链行业</td>
+                            <td>库迪</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary btn-sm" onclick="editDatasource(this)">编辑</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteDatasource(this)">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>-</td>
+                            <td>公众号</td>
+                            <td>人工智能行业</td>
+                            <td>星巴克</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary btn-sm" onclick="editDatasource(this)">编辑</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteDatasource(this)">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="switchPage('discover')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">发现</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('morning')">
+            <div class="nav-icon">📰</div>
+            <div class="nav-label">早报</div>
+        </button>
+        <button class="nav-item active" onclick="switchPage('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">设置</div>
+        </button>
+    </div>
+
+    <div id="eventTypeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>新增事件类型</h3>
+            </div>
+            <form id="eventTypeForm">
+                <div class="form-group">
+                    <label>类型名称</label>
+                    <input type="text" name="name" placeholder="请输入类型名称" required>
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea name="description" rows="3" placeholder="请输入描述信息"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('eventTypeModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">确定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="industryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>新增行业</h3>
+            </div>
+            <form id="industryForm">
+                <div class="form-group">
+                    <label>行业名称</label>
+                    <input type="text" name="name" placeholder="请输入行业名称" required>
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea name="description" rows="3" placeholder="请输入描述信息"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('industryModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">确定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="entityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>新增实体</h3>
+            </div>
+            <form id="entityForm">
+                <div class="form-group">
+                    <label>实体名称</label>
+                    <input type="text" name="name" placeholder="请输入实体名称" required>
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea name="description" rows="3" placeholder="请输入描述信息"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('entityModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">确定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="datasourceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>添加数据源</h3>
+            </div>
+            <form id="datasourceForm">
+                <div class="form-group">
+                    <label>网址</label>
+                    <input type="text" name="url" id="datasourceUrl" placeholder="请输入网址/APP名称/公众号名称">
+                </div>
+                <div class="form-group">
+                    <label>类型</label>
+                    <select name="type" id="datasourceType" required>
+                        <option value="">请选择</option>
+                        <option value="网址">网址</option>
+                        <option value="APP">APP</option>
+                        <option value="公众号">公众号</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>行业分类</label>
+                    <select name="industry" id="industrySelect" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>实体分类</label>
+                    <select name="entity" id="entitySelect" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('datasourceModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">确定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchPage(page) {
+            if (page === 'discover') {
+                window.location.href = '发现.html';
+            } else if (page === 'morning') {
+                window.location.href = '早报.html';
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'event') {
+                document.querySelector('.tab-button:nth-child(1)').classList.add('active');
+                document.getElementById('eventTab').classList.add('active');
+            } else {
+                document.querySelector('.tab-button:nth-child(2)').classList.add('active');
+                document.getElementById('datasourceTab').classList.add('active');
+            }
+        }
+
+        function switchSubTab(subTab) {
+            document.querySelectorAll('.sub-tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.sub-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            
+            if (subTab === 'eventType') {
+                document.getElementById('eventTypeContent').classList.add('active');
+            } else if (subTab === 'industry') {
+                document.getElementById('industryContent').classList.add('active');
+            } else if (subTab === 'entity') {
+                document.getElementById('entityContent').classList.add('active');
+            }
+        }
+
+        function openModal(modalId) {
+            if (modalId === 'datasourceModal') {
+                updateDatasourceOptions();
+            }
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function updateDatasourceOptions() {
+            const industrySelect = document.getElementById('industrySelect');
+            const entitySelect = document.getElementById('entitySelect');
+            
+            industrySelect.innerHTML = '<option value="">请选择</option>';
+            const industryRows = document.querySelectorAll('#industryTableBody tr');
+            industryRows.forEach(row => {
+                const industryName = row.cells[0].textContent;
+                const option = document.createElement('option');
+                option.value = industryName;
+                option.textContent = industryName;
+                industrySelect.appendChild(option);
+            });
+            
+            entitySelect.innerHTML = '<option value="">请选择</option>';
+            const entityRows = document.querySelectorAll('#entityTableBody tr');
+            entityRows.forEach(row => {
+                const entityName = row.cells[0].textContent;
+                const option = document.createElement('option');
+                option.value = entityName;
+                option.textContent = entityName;
+                entitySelect.appendChild(option);
+            });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            const formMap = {
+                'eventTypeModal': 'eventTypeForm',
+                'industryModal': 'industryForm',
+                'entityModal': 'entityForm',
+                'datasourceModal': 'datasourceForm'
+            };
+            const formId = formMap[modalId];
+            if (formId) {
+                document.getElementById(formId).reset();
+            }
+            
+            currentEditRow = null;
+            currentEditType = null;
+            
+            if (modalId === 'eventTypeModal') {
+                document.querySelector('#eventTypeModal .modal-header h3').textContent = '新增事件类型';
+            } else if (modalId === 'industryModal') {
+                document.querySelector('#industryModal .modal-header h3').textContent = '新增行业';
+            } else if (modalId === 'entityModal') {
+                document.querySelector('#entityModal .modal-header h3').textContent = '新增实体';
+            } else if (modalId === 'datasourceModal') {
+                document.querySelector('#datasourceModal .modal-header h3').textContent = '添加数据源';
+                document.getElementById('datasourceUrl').required = false;
+            }
+        }
+
+        document.getElementById('eventTypeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            if (currentEditRow && currentEditType === 'eventType') {
+                currentEditRow.cells[0].textContent = data.name;
+                currentEditRow.cells[1].textContent = data.description;
+                closeModal('eventTypeModal');
+                alert('事件类型更新成功！');
+            } else {
+                const tbody = document.getElementById('eventTypeTableBody');
+                const newRow = tbody.insertRow(0);
+                newRow.innerHTML = `
+                    <td>${data.name}</td>
+                    <td>${data.description}</td>
+                    <td>${new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                        </div>
+                    </td>
+                `;
+                closeModal('eventTypeModal');
+                alert('事件类型添加成功！');
+            }
+        });
+
+        document.getElementById('industryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            if (currentEditRow && currentEditType === 'industry') {
+                currentEditRow.cells[0].textContent = data.name;
+                currentEditRow.cells[1].textContent = data.description;
+                closeModal('industryModal');
+                alert('行业更新成功！');
+            } else {
+                const tbody = document.getElementById('industryTableBody');
+                const newRow = tbody.insertRow(0);
+                newRow.innerHTML = `
+                    <td>${data.name}</td>
+                    <td>${data.description}</td>
+                    <td>${new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                        </div>
+                    </td>
+                `;
+                closeModal('industryModal');
+                alert('行业添加成功！');
+            }
+        });
+
+        document.getElementById('entityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            if (currentEditRow && currentEditType === 'entity') {
+                currentEditRow.cells[0].textContent = data.name;
+                currentEditRow.cells[1].textContent = data.description;
+                closeModal('entityModal');
+                alert('实体更新成功！');
+            } else {
+                const tbody = document.getElementById('entityTableBody');
+                const newRow = tbody.insertRow(0);
+                newRow.innerHTML = `
+                    <td>${data.name}</td>
+                    <td>${data.description}</td>
+                    <td>${new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-sm" onclick="editItem(this)">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem(this)">删除</button>
+                        </div>
+                    </td>
+                `;
+                closeModal('entityModal');
+                alert('实体添加成功！');
+            }
+        });
+
+        document.getElementById('datasourceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            const urlDisplay = data.url || '-';
+            
+            if (currentEditRow && currentEditType === 'datasource') {
+                currentEditRow.cells[0].textContent = urlDisplay;
+                currentEditRow.cells[1].textContent = data.type;
+                currentEditRow.cells[2].textContent = data.industry;
+                currentEditRow.cells[3].textContent = data.entity;
+                closeModal('datasourceModal');
+                alert('数据源更新成功！');
+            } else {
+                const tbody = document.getElementById('datasourceTableBody');
+                const newRow = tbody.insertRow(0);
+                newRow.innerHTML = `
+                    <td>${urlDisplay}</td>
+                    <td>${data.type}</td>
+                    <td>${data.industry}</td>
+                    <td>${data.entity}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-sm" onclick="editDatasource(this)">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteDatasource(this)">删除</button>
+                        </div>
+                    </td>
+                `;
+                closeModal('datasourceModal');
+                alert('数据源添加成功！');
+            }
+        });
+
+        let currentEditRow = null;
+        let currentEditType = null;
+
+        function editItem(btn) {
+            const row = btn.closest('tr');
+            currentEditRow = row;
+            const cells = row.cells;
+            
+            const activeSubTab = document.querySelector('.sub-content.active');
+            
+            if (activeSubTab.id === 'eventTypeContent') {
+                currentEditType = 'eventType';
+                const name = cells[0].textContent;
+                const description = cells[1].textContent;
+                
+                document.querySelector('#eventTypeForm input[name="name"]').value = name;
+                document.querySelector('#eventTypeForm textarea[name="description"]').value = description;
+                
+                document.querySelector('#eventTypeModal .modal-header h3').textContent = '编辑事件类型';
+                openModal('eventTypeModal');
+            } else if (activeSubTab.id === 'industryContent') {
+                currentEditType = 'industry';
+                const name = cells[0].textContent;
+                const description = cells[1].textContent;
+                
+                document.querySelector('#industryForm input[name="name"]').value = name;
+                document.querySelector('#industryForm textarea[name="description"]').value = description;
+                
+                document.querySelector('#industryModal .modal-header h3').textContent = '编辑行业';
+                openModal('industryModal');
+            } else if (activeSubTab.id === 'entityContent') {
+                currentEditType = 'entity';
+                const name = cells[0].textContent;
+                const description = cells[1].textContent;
+                
+                document.querySelector('#entityForm input[name="name"]').value = name;
+                document.querySelector('#entityForm textarea[name="description"]').value = description;
+                
+                document.querySelector('#entityModal .modal-header h3').textContent = '编辑实体';
+                openModal('entityModal');
+            }
+        }
+
+        function deleteItem(btn) {
+            if (confirm('确定要删除这条记录吗？')) {
+                btn.closest('tr').remove();
+                alert('删除成功！');
+            }
+        }
+
+        function editDatasource(btn) {
+            const row = btn.closest('tr');
+            currentEditRow = row;
+            currentEditType = 'datasource';
+            const cells = row.cells;
+            
+            const url = cells[0].textContent === '-' ? '' : cells[0].textContent;
+            const type = cells[1].textContent;
+            const industry = cells[2].textContent;
+            const entity = cells[3].textContent;
+            
+            updateDatasourceOptions();
+            
+            document.querySelector('#datasourceForm input[name="url"]').value = url;
+            document.querySelector('#datasourceForm select[name="type"]').value = type;
+            
+            if (type === '网址') {
+                document.getElementById('datasourceUrl').required = true;
+            } else {
+                document.getElementById('datasourceUrl').required = false;
+            }
+            
+            document.querySelector('#datasourceForm select[name="industry"]').value = industry;
+            document.querySelector('#datasourceForm select[name="entity"]').value = entity;
+            
+            document.querySelector('#datasourceModal .modal-header h3').textContent = '编辑数据源';
+            openModal('datasourceModal');
+        }
+
+        function deleteDatasource(btn) {
+            if (confirm('确定要删除这个数据源吗？')) {
+                btn.closest('tr').remove();
+                alert('删除成功！');
+            }
+        }
+
+        function testConnection(btn) {
+            const originalText = btn.textContent;
+            btn.textContent = '测试中...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                alert('连接测试成功！');
+            }, 1500);
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        document.getElementById('datasourceType').addEventListener('change', function() {
+            const urlInput = document.getElementById('datasourceUrl');
+            if (this.value === '网址') {
+                urlInput.required = true;
+            } else {
+                urlInput.required = false;
+            }
+        });
+    </script>
+</body>
+</html>

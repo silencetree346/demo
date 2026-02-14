@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资讯详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f6f8;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .header-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .article-header {
+            padding: 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .article-title {
+            font-size: 28px;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .article-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag-industry {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tag-entity {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .article-summary {
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .summary-content {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .article-content {
+            padding: 30px;
+        }
+
+        .content-text {
+            font-size: 16px;
+            color: #333;
+            line-height: 2;
+            text-align: justify;
+        }
+
+        .content-text p {
+            margin-bottom: 20px;
+        }
+
+        .article-footer {
+            padding: 25px 30px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .original-link-btn {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .original-link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-decoration: none;
+            color: #999;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <span class="header-title">资讯详情</span>
+    </div>
+
+    <div class="container">
+        <div id="articleContent">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="switchPage('discover')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">发现</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('morning')">
+            <div class="nav-icon">📰</div>
+            <div class="nav-label">早报</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">设置</div>
+        </button>
+    </div>
+
+    <script>
+        const newsData = {
+            1: {
+                id: 1,
+                title: '星巴克推出春季限定新品，咖啡茶饮市场竞争加剧',
+                industry: '咖啡茶饮行业',
+                entity: '星巴克',
+                media: '财经日报',
+                publishTime: '2026-02-14 10:30',
+                summary: '星巴克今日宣布推出春季限定系列新品，包括多款创新饮品。此举被视为应对市场竞争的重要策略，业内人士认为这将进一步推动咖啡茶饮行业的创新发展。新品系列融合了中国传统茶文化元素，体现了星巴克本土化战略的深化。',
+                content: `星巴克中国今日正式发布了2026年春季限定系列新品，包括樱花拿铁、抹茶星冰乐等多款创新饮品。此次新品发布会在上海举行，吸引了众多媒体和业内人士的关注。
+
+据星巴克中国区CEO介绍，这一系列新品的研发历时半年，融合了中国传统茶文化元素和西方咖啡文化，旨在为中国消费者带来独特的味觉体验。新品采用了优质的茶叶原料和创新的制作工艺，既保留了茶的清香，又融入了咖啡的醇厚。
+
+业内分析人士指出，星巴克此举是应对日益激烈的市场竞争的重要策略。近年来，随着本土咖啡品牌的崛起，传统国际品牌面临着前所未有的挑战。通过推出本土化的创新产品，星巴克正在努力保持其市场领先地位。
+
+市场数据显示，中国咖啡市场规模持续扩大，预计2026年将突破5000亿元。在这样的市场环境下，产品创新成为各大品牌竞争的关键。星巴克的春季新品发布，无疑为行业树立了新的标杆。
+
+消费者对新品的反应也十分积极。社交媒体上，相关话题的讨论量迅速攀升，许多消费者表示期待尝试这些融合了东西方文化的创新饮品。星巴克门店也做好了充分准备，确保新品供应充足。`,
+                originalUrl: 'https://example.com/news/starbucks-spring-2026'
+            },
+            2: {
+                id: 2,
+                title: '库迪咖啡完成新一轮融资，加速全国扩张步伐',
+                industry: '咖啡茶饮行业',
+                entity: '库迪',
+                media: '投资界',
+                publishTime: '2026-02-14 09:15',
+                summary: '库迪咖啡宣布完成新一轮数亿元融资，本轮融资将主要用于门店扩张和供应链建设。公司计划在未来一年内新开1000家门店，进一步提升市场占有率。此次融资凸显了资本市场对新兴咖啡品牌的信心。',
+                content: `库迪咖啡今日正式宣布完成C轮融资，融资金额达5亿元人民币。本轮融资由知名投资机构领投，多家战略投资者跟投。这是库迪咖啡成立以来规模最大的一轮融资。
+
+公司创始人表示，本轮融资将主要用于三个方面：一是加速全国门店网络布局，计划在未来12个月内新开设1000家门店；二是加强供应链建设，提升运营效率；三是投入技术研发，打造数字化运营平台。
+
+库迪咖啡自2022年创立以来，以"高品质、高性价比"的定位迅速在市场上站稳脚跟。截至目前，公司已在全国开设超过3000家门店，覆盖200多个城市。其独特的商业模式和快速的扩张策略，吸引了众多投资者的关注。
+
+投资方代表表示，看好中国咖啡市场的长期发展潜力，库迪咖啡的商业模式和团队执行力给他们留下了深刻印象。随着消费升级和咖啡文化的普及，本土咖啡品牌有望获得更大的市场份额。
+
+行业观察家认为，库迪咖啡的融资成功，反映了资本市场对新兴咖啡品牌的信心。在传统国际品牌占据主导地位的市场中，本土品牌通过差异化定位和创新运营模式，正在开辟出新的发展空间。
+
+对于未来发展，库迪咖啡管理层表示，将继续坚持"用户至上"的理念，通过持续的产品创新和服务优化，为消费者提供更好的咖啡体验。同时，公司也将积极探索多元化业务，拓展收入来源。`,
+                originalUrl: 'https://example.com/news/cotti-coffee-funding-2026'
+            },
+            3: {
+                id: 3,
+                title: '人工智能技术赋能咖啡行业，智能化成为新趋势',
+                industry: '人工智能行业',
+                entity: '星巴克',
+                media: '科技前沿',
+                publishTime: '2026-02-14 08:45',
+                summary: '人工智能技术正在深刻改变咖啡行业的运营模式。从智能点单到个性化推荐，从供应链优化到门店管理，AI技术的应用大幅提升了运营效率和客户体验。各大咖啡品牌纷纷加大在AI领域的投入。',
+                content: `人工智能技术正在咖啡行业掀起一场革命。从智能点单系统到个性化推荐引擎，从供应链优化到门店管理，AI技术的应用正在全方位改变咖啡行业的运营模式。
+
+以星巴克为例，公司已经在全球范围内部署了智能点单系统。该系统利用机器学习算法，根据顾客的历史订单、时间、天气等多维度数据，为每位顾客提供个性化的产品推荐。数据显示，使用该系统后，顾客的购买转化率提升了25%。
+
+在供应链管理方面，AI技术也发挥着重要作用。通过大数据分析和预测模型，咖啡企业能够更准确地预测各门店的产品需求，优化库存管理，减少浪费。某知名咖啡连锁品牌应用AI系统后，库存周转率提升了30%，浪费率降低了40%。
+
+智能门店管理系统则帮助企业实时监控门店运营状况，包括客流量、销售额、员工效率等关键指标。系统能够自动分析数据，发现潜在问题，并提供优化建议。这大大提升了管理效率，降低了运营成本。
+
+业内专家指出，人工智能技术的应用，不仅提升了企业的运营效率，更重要的是改善了顾客体验。通过精准的个性化服务，企业能够更好地满足顾客需求，提升客户满意度和忠诚度。
+
+展望未来，随着AI技术的不断发展，咖啡行业的智能化程度将进一步提升。从无人咖啡机到智能配送机器人，从虚拟咖啡师到增强现实体验，各种创新应用将不断涌现，为行业发展注入新的活力。`,
+                originalUrl: 'https://example.com/news/ai-coffee-industry-2026'
+            },
+            4: {
+                id: 4,
+                title: '供应链行业迎来数字化转型浪潮，效率提升显著',
+                industry: '供应链行业',
+                entity: '库迪',
+                media: '物流时报',
+                publishTime: '2026-02-13 16:20',
+                summary: '随着数字化技术的深入应用，供应链行业正经历着深刻变革。智能仓储、自动化配送等新技术的应用，使得供应链效率大幅提升，成本显著降低。行业数字化转型已成为不可逆转的趋势。',
+                content: `供应链行业正经历着一场深刻的数字化转型。从智能仓储到自动化配送，从数据分析到预测性维护，各种数字化技术的应用正在重塑行业格局。
+
+在智能仓储方面，自动化立体仓库、AGV机器人、智能分拣系统等技术的应用，大幅提升了仓储效率。某大型物流企业的数据显示，采用智能仓储系统后，仓储效率提升了60%，人力成本降低了40%，准确率接近100%。
+
+自动化配送是另一个重要的发展方向。无人配送车、配送机器人、无人机配送等新技术正在逐步投入使用。虽然目前还处于试点阶段，但其潜力已经显现。这些技术不仅能提高配送效率，还能降低人力成本，改善配送体验。
+
+数据分析和人工智能技术在供应链优化中也发挥着重要作用。通过大数据分析，企业能够更准确地预测需求，优化库存，提升供应链的响应速度。机器学习算法可以识别供应链中的潜在风险，帮助企业提前采取应对措施。
+
+库迪咖啡的供应链负责人在接受采访时表示，公司高度重视供应链的数字化建设。通过建立智能供应链管理系统，实现了从原料采购到产品配送的全流程数字化管理。这不仅提升了效率，还保证了产品质量的稳定性。
+
+业内专家认为，供应链的数字化转型是行业发展的必然趋势。在竞争日益激烈的市场环境下，只有不断提升供应链效率，降低成本，才能保持竞争优势。未来，随着5G、物联网、区块链等技术的发展，供应链将变得更加智能、高效、透明。`,
+                originalUrl: 'https://example.com/news/supply-chain-digital-2026'
+            },
+            5: {
+                id: 5,
+                title: '咖啡茶饮行业2026年市场分析报告发布',
+                industry: '咖啡茶饮行业',
+                entity: '星巴克',
+                media: '行业研究院',
+                publishTime: '2026-02-13 14:30',
+                summary: '最新市场分析报告显示，咖啡茶饮行业持续保持高速增长态势。预计2026年市场规模将突破5000亿元，年增长率达到15%以上。行业竞争日趋激烈，头部品牌优势明显。',
+                content: `中国咖啡茶饮行业研究院今日发布《2026年咖啡茶饮行业市场分析报告》。报告显示，中国咖啡茶饮市场继续保持强劲增长势头，预计2026年市场规模将突破5000亿元大关，同比增长15.2%。
+
+报告指出，市场增长的主要驱动力包括：一是消费升级，消费者对咖啡茶饮的需求从"喝"向"品"转变；二是消费场景多元化，从传统的门店消费扩展到办公、家庭、外出等多种场景；三是产品创新，各品牌不断推出新品，满足消费者多样化需求。
+
+在市场格局方面，报告显示头部品牌优势明显。星巴克、瑞幸、库迪等品牌占据了超过60%的市场份额。其中，星巴克凭借其品牌影响力和高端定位，继续保持市场领先地位；瑞幸和库迪则以性价比优势，在中端市场快速扩张。
+
+区域市场分析显示，一二线城市仍是主要消费市场，但三四线城市增长潜力巨大。随着收入水平提升和消费观念转变，下沉市场正在成为各大品牌争夺的焦点。
+
+产品趋势方面，报告指出三个明显特征：一是健康化，低糖、低脂、植物基产品受到青睐；二是本土化，融合中国茶文化的产品越来越多；三是个性化，定制化服务满足不同消费者需求。
+
+报告还分析了行业面临的挑战，包括原材料价格上涨、人力成本增加、竞争加剧等。报告建议企业通过供应链优化、数字化转型、品牌建设等方式提升竞争力。
+
+展望未来，报告认为中国咖啡茶饮市场仍有巨大增长空间。随着咖啡文化的进一步普及和消费习惯的养成，市场规模有望在未来五年内翻倍。同时，行业也将经历整合期，优胜劣汰将更加明显。`,
+                originalUrl: 'https://example.com/news/coffee-market-report-2026'
+            },
+            6: {
+                id: 6,
+                title: '星巴克与库迪展开激烈竞争，市场格局或将重塑',
+                industry: '咖啡茶饮行业',
+                entity: '星巴克',
+                media: '商业观察',
+                publishTime: '2026-02-13 11:50',
+                summary: '在咖啡市场上，星巴克和库迪的竞争愈发激烈。两家企业在产品创新、价格策略、门店布局等多个维度展开全方位竞争，市场格局面临重塑。这场竞争将深刻影响行业未来发展方向。',
+                content: `中国咖啡市场正在上演一场激烈的竞争大戏。作为国际巨头的星巴克和本土新秀库迪，在产品、价格、渠道等多个维度展开全方位竞争，市场格局正在被重塑。
+
+在产品策略上，星巴克坚持高端路线，强调品质和体验。近期推出的春季限定系列，将价格定在35-45元区间，目标客群是追求品质的中高端消费者。而库迪则主打性价比，同类产品价格普遍在15-25元，目标是对价格敏感的大众消费者。
+
+门店布局方面，星巴克注重选址和店面设计，多选择商业中心、写字楼等高端位置。库迪则采取"农村包围城市"策略，在二三线城市和社区商圈快速布点，门店数量已经超过3000家。
+
+营销策略上，两家企业也各有特色。星巴克重视品牌建设和客户忠诚度培养，通过会员体系、社交媒体营销等方式维护品牌形象。库迪则更注重互联网营销，通过短视频、直播等新媒体渠道快速获客。
+
+业内分析师指出，这种竞争格局对行业发展有积极意义。竞争促使企业不断创新，提升服务质量，最终受益的是消费者。同时，竞争也在推动行业规范化，促进整个行业的健康发展。
+
+然而，激烈的竞争也带来挑战。价格战可能导致利润下降，过度扩张可能影响服务质量。如何在竞争中保持理性，实现可持续发展，是每个企业都需要思考的问题。
+
+市场观察人士认为，未来咖啡市场将呈现多元化格局。高端、中端、平价市场都有发展空间，关键是找准定位，做好差异化。星巴克和库迪的竞争，只是这个多元化市场的一个缩影。`,
+                originalUrl: 'https://example.com/news/starbucks-cotti-competition-2026'
+            },
+            7: {
+                id: 7,
+                title: '人工智能在餐饮行业的应用案例分析',
+                industry: '人工智能行业',
+                entity: '库迪',
+                media: '技术周刊',
+                publishTime: '2026-02-12 15:30',
+                summary: '人工智能技术在餐饮行业的应用越来越广泛。通过机器学习算法分析消费者偏好，实现精准营销；利用计算机视觉技术优化食品制作流程；智能客服系统提升服务效率。AI正在重塑餐饮行业。',
+                content: `人工智能技术在餐饮行业的应用正在从概念走向实践。越来越多的餐饮企业开始尝试将AI技术融入运营的各个环节，取得了显著成效。
+
+在精准营销方面，机器学习算法发挥着重要作用。通过分析顾客的消费历史、偏好、行为模式等数据，系统可以为每位顾客提供个性化的产品推荐。库迪咖啡的智能推荐系统上线后，产品推荐接受率提升了40%，客单价增加了20%。
+
+计算机视觉技术在食品制作和质量控制中也有广泛应用。通过图像识别技术，系统可以实时监控食品制作过程，确保每一杯咖啡的品质稳定。同时，还可以自动识别原材料质量，及时发现问题。
+
+智能客服系统大大提升了服务效率。基于自然语言处理技术的聊天机器人，可以回答90%以上的常见问题，处理订单、解答咨询，24小时在线服务。这不仅降低了人力成本，还提升了客户满意度。
+
+在运营管理方面，AI技术帮助企业实现精细化管理。预测模型可以准确预测各时段、各门店的客流量和销量，帮助企业合理安排人员和备货。优化算法可以为配送路线规划提供最优方案，降低物流成本。
+
+某餐饮科技公司CEO表示，AI技术的应用是餐饮行业数字化转型的重要方向。未来，随着技术的不断进步，AI将在更多场景中发挥作用，如智能厨房、无人餐厅等。
+
+专家建议，餐饮企业在应用AI技术时，应该根据自身实际情况，循序渐进。先从简单场景开始，积累经验后再扩展到复杂场景。同时，要注重数据安全和隐私保护，建立完善的数据管理体系。`,
+                originalUrl: 'https://example.com/news/ai-restaurant-cases-2026'
+            },
+            8: {
+                id: 8,
+                title: '供应链金融创新助力中小企业发展',
+                industry: '供应链行业',
+                entity: '星巴克',
+                media: '金融时报',
+                publishTime: '2026-02-12 10:20',
+                summary: '供应链金融作为创新金融服务模式，正在为中小企业解决融资难题。通过整合供应链上下游资源，为企业提供更加便捷高效的金融服务。大型企业的供应链金融平台，成为中小企业的重要融资渠道。',
+                content: `供应链金融正在成为解决中小企业融资难题的重要途径。通过将金融服务嵌入供应链，利用核心企业的信用优势，为上下游中小企业提供融资支持。
+
+以星巴克的供应链金融平台为例。作为咖啡行业的龙头企业，星巴克与金融机构合作，为其供应商提供应收账款融资、订单融资等服务。供应商可以凭借与星巴克的交易记录和应收账款，快速获得融资，解决资金周转问题。
+
+这种模式的优势在于，充分利用了核心企业的信用背书，降低了金融机构的风险，从而能够为中小企业提供更优惠的融资条件。数据显示，通过供应链金融平台，中小企业的融资成本平均降低了2-3个百分点，融资效率提升了50%以上。
+
+对于核心企业来说，发展供应链金融也有多重好处。一是可以稳定供应链，确保供应商的资金健康；二是可以获得一定的金融收益；三是可以加强对供应链的控制和管理。
+
+金融科技的发展为供应链金融创新提供了技术支撑。区块链技术保证了交易信息的真实可信，大数据分析提升了风险评估的准确性，人工智能技术提高了业务处理效率。这些技术的应用，使得供应链金融服务更加安全、高效、便捷。
+
+然而，供应链金融的发展也面临一些挑战。如何防范欺诈风险，如何平衡各方利益，如何完善相关法律法规，都是需要解决的问题。
+
+专家建议，发展供应链金融需要多方协作。政府应该出台相关政策，鼓励和规范供应链金融发展；金融机构应该创新产品和服务，满足企业多样化需求；企业应该加强信用建设，营造良好的商业环境。
+
+展望未来，供应链金融将成为金融服务实体经济的重要方式。随着技术的进步和模式的创新，将有更多中小企业从中受益，助力实体经济的发展。`,
+                originalUrl: 'https://example.com/news/supply-chain-finance-2026'
+            }
+        };
+
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function renderArticle() {
+            const articleId = getUrlParameter('id');
+            const article = newsData[articleId];
+            
+            if (!article) {
+                document.getElementById('articleContent').innerHTML = '<div class="loading">文章不存在</div>';
+                return;
+            }
+
+            document.getElementById('articleContent').innerHTML = `
+                <div class="article-card">
+                    <div class="article-header">
+                        <h1 class="article-title">${article.title}</h1>
+                        <div class="article-meta">
+                            <span class="meta-item">📰 ${article.media}</span>
+                            <span class="meta-item">🕐 ${article.publishTime}</span>
+                        </div>
+                        <div class="article-tags">
+                            <span class="tag tag-industry">${article.industry}</span>
+                            <span class="tag tag-entity">${article.entity}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="article-summary">
+                        <div class="summary-label">📝 文章摘要</div>
+                        <div class="summary-content">${article.summary}</div>
+                    </div>
+                    
+                    <div class="article-content">
+                        <div class="content-text">${article.content.split('\n\n').map(p => `<p>${p}</p>`).join('')}</div>
+                    </div>
+                    
+                    <div class="article-footer">
+                        <a href="${article.originalUrl}" target="_blank" class="original-link-btn">
+                            <span>查看原文</span>
+                            <span>🔗</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function switchPage(page) {
+            if (page === 'discover') {
+                window.location.href = '发现.html';
+            } else if (page === 'morning') {
+                window.location.href = '早报.html';
+            } else if (page === 'settings') {
+                window.location.href = '管理员配置.html';
+            }
+        }
+
+        renderArticle();
+    </script>
+</body>
+</html>

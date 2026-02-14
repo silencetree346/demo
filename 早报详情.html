@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>早报详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f6f8;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .header-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-btn.cancel {
+            background: rgba(255,100,100,0.3);
+        }
+
+        .header-btn.cancel:hover {
+            background: rgba(255,100,100,0.5);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .paper-header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .paper-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .paper-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .paper-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag-latest {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .tag-shared {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .ai-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .ai-summary-title {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-summary-content {
+            font-size: 15px;
+            color: #555;
+            line-height: 2;
+        }
+
+        .events-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-item {
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-rank {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .rank-top3 {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .rank-normal {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        .event-content {
+            display: inline-block;
+            width: calc(100% - 40px);
+            vertical-align: top;
+        }
+
+        .event-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .event-title:hover {
+            color: #667eea;
+        }
+
+        .event-summary {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-decoration: none;
+            color: #999;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .modal-btn-confirm {
+            background: #ff4757;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <span class="header-title">早报详情</span>
+        </div>
+        <div class="header-right">
+            <button class="header-btn" onclick="goToEdit()">⚙️ 编辑</button>
+            <button class="header-btn cancel" onclick="showCancelModal()">🗑️ 取消订阅</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="paper-header">
+            <div class="paper-title" id="paperTitle">星巴克春季新品来袭！咖啡茶饮市场"卷"出新高度，库迪紧跟步伐</div>
+            <div class="paper-meta">
+                <span>📅 2026-02-14</span>
+                <span>📰 共10条资讯</span>
+            </div>
+            <div class="paper-tags" id="paperTags">
+                <span class="tag tag-latest">最新</span>
+            </div>
+        </div>
+
+        <div class="ai-summary">
+            <div class="ai-summary-title">
+                <span>🤖</span>
+                <span>AI 智能总结</span>
+            </div>
+            <div class="ai-summary-content">
+                今日咖啡茶饮行业热度持续攀升，星巴克春季限定新品发布引发市场广泛关注，融合中国茶文化元素的创新饮品成为亮点。与此同时，库迪咖啡宣布完成5亿元C轮融资，计划未来一年新开1000家门店，加速全国扩张步伐。行业竞争日趋白热化，星巴克与库迪在产品、价格、渠道等多维度展开全方位竞争，市场格局面临重塑。此外，人工智能和供应链数字化技术在行业中的应用不断深化，为企业运营效率提升和客户体验优化提供了强大支撑。最新市场分析报告显示，2026年中国咖啡茶饮市场规模预计突破5000亿元，年增长率达15%以上，行业发展前景广阔。
+            </div>
+        </div>
+
+        <div class="events-section">
+            <div class="section-title">
+                <span>📰</span>
+                <span>TOP10 热门事件</span>
+            </div>
+            <div id="eventsList"></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="switchPage('discover')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">发现</div>
+        </button>
+        <button class="nav-item active" onclick="switchPage('morning')">
+            <div class="nav-icon">📰</div>
+            <div class="nav-label">早报</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">设置</div>
+        </button>
+    </div>
+
+    <div class="modal" id="cancelModal">
+        <div class="modal-content">
+            <div class="modal-title">取消订阅</div>
+            <div class="modal-text" id="modalText">您确认要取消该早报吗？</div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeCancelModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmCancel()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const eventsData = [
+            {
+                id: 1,
+                title: '星巴克推出春季限定新品，咖啡茶饮市场竞争加剧',
+                summary: '星巴克今日宣布推出春季限定系列新品，包括多款创新饮品。此举被视为应对市场竞争的重要策略...',
+                media: '财经日报',
+                publishTime: '2026-02-14 10:30',
+                views: 3200,
+                searchCount: 580
+            },
+            {
+                id: 2,
+                title: '库迪咖啡完成新一轮融资，加速全国扩张步伐',
+                summary: '库迪咖啡宣布完成新一轮数亿元融资，本轮融资将主要用于门店扩张和供应链建设...',
+                media: '投资界',
+                publishTime: '2026-02-14 09:15',
+                views: 2800,
+                searchCount: 520
+            },
+            {
+                id: 5,
+                title: '咖啡茶饮行业2026年市场分析报告发布',
+                summary: '最新市场分析报告显示，咖啡茶饮行业持续保持高速增长态势。预计2026年市场规模将突破5000亿元...',
+                media: '行业研究院',
+                publishTime: '2026-02-13 14:30',
+                views: 2340,
+                searchCount: 450
+            },
+            {
+                id: 6,
+                title: '星巴克与库迪展开激烈竞争，市场格局或将重塑',
+                summary: '在咖啡市场上，星巴克和库迪的竞争愈发激烈。两家企业在产品创新、价格策略、门店布局等多个维度展开全方位竞争...',
+                media: '商业观察',
+                publishTime: '2026-02-13 11:50',
+                views: 1980,
+                searchCount: 410
+            },
+            {
+                id: 3,
+                title: '人工智能技术赋能咖啡行业，智能化成为新趋势',
+                summary: '人工智能技术正在深刻改变咖啡行业的运营模式。从智能点单到个性化推荐，从供应链优化到门店管理...',
+                media: '科技前沿',
+                publishTime: '2026-02-14 08:45',
+                views: 1580,
+                searchCount: 380
+            },
+            {
+                id: 8,
+                title: '供应链金融创新助力中小企业发展',
+                summary: '供应链金融作为创新金融服务模式，正在为中小企业解决融资难题...',
+                media: '金融时报',
+                publishTime: '2026-02-12 10:20',
+                views: 1450,
+                searchCount: 320
+            },
+            {
+                id: 4,
+                title: '供应链行业迎来数字化转型浪潮，效率提升显著',
+                summary: '随着数字化技术的深入应用，供应链行业正经历着深刻变革。智能仓储、自动化配送等新技术的应用...',
+                media: '物流时报',
+                publishTime: '2026-02-13 16:20',
+                views: 1120,
+                searchCount: 280
+            },
+            {
+                id: 7,
+                title: '人工智能在餐饮行业的应用案例分析',
+                summary: '人工智能技术在餐饮行业的应用越来越广泛。通过机器学习算法分析消费者偏好，实现精准营销...',
+                media: '技术周刊',
+                publishTime: '2026-02-12 15:30',
+                views: 980,
+                searchCount: 250
+            }
+        ];
+
+        const paperId = new URLSearchParams(window.location.search).get('id');
+        const isShared = new URLSearchParams(window.location.search).get('shared') === 'true';
+
+        function renderEvents() {
+            const container = document.getElementById('eventsList');
+            
+            container.innerHTML = eventsData.map((event, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? 'rank-top3' : 'rank-normal';
+                
+                return `
+                    <div class="event-item">
+                        <span class="event-rank ${rankClass}">${rank}</span>
+                        <div class="event-content">
+                            <div class="event-title" onclick="viewEvent(${event.id})">${event.title}</div>
+                            <div class="event-summary">${event.summary}</div>
+                            <div class="event-meta">
+                                <span>📰 ${event.media}</span>
+                                <span>🕐 ${event.publishTime}</span>
+                                <span>👁 ${event.views} 浏览</span>
+                                <span>🔍 ${event.searchCount} 搜索</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewEvent(id) {
+            window.location.href = `详情页.html?id=${id}`;
+        }
+
+        function goBack() {
+            window.location.href = '早报.html';
+        }
+
+        function goToEdit() {
+            window.location.href = '订阅配置.html';
+        }
+
+        function showCancelModal() {
+            const modal = document.getElementById('cancelModal');
+            const modalText = document.getElementById('modalText');
+            
+            if (isShared) {
+                modalText.textContent = '您确认要取消该早报吗？取消后将不再接收此分享的早报推送。';
+            } else {
+                modalText.textContent = '您确认要取消该早报吗？取消后将停止生成早报，且不再分享给他人。';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancelModal').classList.remove('active');
+        }
+
+        function confirmCancel() {
+            if (isShared) {
+                alert('已取消该分享早报的订阅');
+            } else {
+                localStorage.removeItem('hasSubscription');
+                localStorage.removeItem('subscriptionConfig');
+                alert('已取消早报订阅');
+            }
+            window.location.href = '早报.html';
+        }
+
+        function switchPage(page) {
+            if (page === 'discover') {
+                window.location.href = '发现.html';
+            } else if (page === 'morning') {
+                window.location.href = '早报.html';
+            } else if (page === 'settings') {
+                window.location.href = '管理员配置.html';
+            }
+        }
+
+        const paperTags = document.getElementById('paperTags');
+        if (isShared) {
+            paperTags.innerHTML += '<span class="tag tag-shared">分享</span>';
+        }
+
+        renderEvents();
+    </script>
+</body>
+</html>

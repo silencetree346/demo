@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>早报</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f6f8;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .subscribe-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 16px;
+            padding: 80px 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        .add-subscribe-btn {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-subscribe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .morning-paper-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .morning-paper-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .morning-paper-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .paper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .paper-date {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .paper-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-latest {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .tag-shared {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .paper-title {
+            font-size: 17px;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .paper-summary {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-decoration: none;
+            color: #999;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📰 早报</h1>
+        <button class="subscribe-btn" id="subscribeBtn" onclick="goToSubscribe()">⚙️ 订阅设置</button>
+    </div>
+
+    <div class="container" id="contentContainer">
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="switchPage('discover')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">发现</div>
+        </button>
+        <button class="nav-item active" onclick="switchPage('morning')">
+            <div class="nav-icon">📰</div>
+            <div class="nav-label">早报</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">设置</div>
+        </button>
+    </div>
+
+    <script>
+        const hasSubscription = localStorage.getItem('hasSubscription') === 'true';
+
+        const morningPapers = [
+            {
+                id: 1,
+                date: '2026-02-14',
+                title: '星巴克春季新品来袭！咖啡茶饮市场"卷"出新高度，库迪紧跟步伐',
+                summary: '今日早报聚焦咖啡茶饮行业动态，星巴克春季限定新品发布引发市场关注，库迪完成新融资加速扩张。行业竞争白热化，数字化转型成新趋势。',
+                isLatest: true,
+                isShared: false
+            },
+            {
+                id: 2,
+                date: '2026-02-13',
+                title: '咖啡市场5000亿规模！星巴克库迪上演"双雄争霸"',
+                summary: '咖啡茶饮市场规模突破5000亿元，行业增长率达15%。星巴克与库迪在产品、价格、渠道全方位竞争，市场格局面临重塑。',
+                isLatest: false,
+                isShared: false
+            },
+            {
+                id: 3,
+                date: '2026-02-12',
+                title: 'AI赋能咖啡行业！智能化浪潮下的供应链革命',
+                summary: '人工智能技术深度应用于咖啡行业，从智能点单到供应链优化全面覆盖。供应链数字化转型显著提升效率，行业进入智能化新阶段。',
+                isLatest: false,
+                isShared: true
+            },
+            {
+                id: 4,
+                date: '2026-02-11',
+                title: '库迪开店狂飙突进！3000+门店背后的扩张秘密',
+                summary: '库迪咖啡门店数量突破3000家，覆盖200多个城市。高性价比战略+快速扩张模式，本土品牌崛起势头强劲。',
+                isLatest: false,
+                isShared: false
+            }
+        ];
+
+        function renderContent() {
+            const container = document.getElementById('contentContainer');
+            
+            if (!hasSubscription) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📰</div>
+                        <div class="empty-title">暂无订阅早报</div>
+                        <div class="empty-desc">订阅早报，每天获取精选资讯</div>
+                        <button class="add-subscribe-btn" onclick="goToSubscribe()">添加订阅早报</button>
+                    </div>
+                `;
+                document.getElementById('subscribeBtn').style.display = 'none';
+                return;
+            }
+
+            const latestPapers = morningPapers.filter(p => p.isLatest);
+            const oldPapers = morningPapers.filter(p => !p.isLatest);
+
+            let html = '';
+
+            if (latestPapers.length > 0) {
+                html += `
+                    <div class="section">
+                        <div class="section-title">
+                            <span>✨</span>
+                            <span>本期早报</span>
+                        </div>
+                        <div class="morning-paper-list">
+                            ${latestPapers.map(paper => renderPaperItem(paper)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (oldPapers.length > 0) {
+                html += `
+                    <div class="section">
+                        <div class="section-title">
+                            <span>📚</span>
+                            <span>往期早报</span>
+                        </div>
+                        <div class="morning-paper-list">
+                            ${oldPapers.map(paper => renderPaperItem(paper)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderPaperItem(paper) {
+            const tags = [];
+            if (paper.isLatest) {
+                tags.push('<span class="tag tag-latest">最新</span>');
+            }
+            if (paper.isShared) {
+                tags.push('<span class="tag tag-shared">分享</span>');
+            }
+
+            return `
+                <div class="morning-paper-item" onclick="viewPaper(${paper.id})">
+                    <div class="paper-header">
+                        <div class="paper-date">📅 ${paper.date}</div>
+                        <div class="paper-tags">${tags.join('')}</div>
+                    </div>
+                    <div class="paper-title">${paper.title}</div>
+                    <div class="paper-summary">${paper.summary}</div>
+                </div>
+            `;
+        }
+
+        function viewPaper(id) {
+            const paper = morningPapers.find(p => p.id === id);
+            const sharedParam = paper && paper.isShared ? '&shared=true' : '';
+            window.location.href = `早报详情.html?id=${id}${sharedParam}`;
+        }
+
+        function goToSubscribe() {
+            window.location.href = '订阅配置.html';
+        }
+
+        function switchPage(page) {
+            if (page === 'discover') {
+                window.location.href = '发现.html';
+            } else if (page === 'settings') {
+                window.location.href = '管理员配置.html';
+            }
+        }
+
+        renderContent();
+    </script>
+</body>
+</html>

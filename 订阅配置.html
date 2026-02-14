@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订阅配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f6f8;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .header-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tip-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .tip-title {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tip-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .config-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag-item {
+            padding: 10px 18px;
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .tag-item:hover {
+            background: #e8e8e8;
+        }
+
+        .tag-item.selected {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-color: #1976d2;
+        }
+
+        .tag-item.disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .cancel-btn, .confirm-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .cancel-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .confirm-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .selected-summary {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .selected-summary strong {
+            color: #333;
+        }
+
+        #userSearchResults {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #userSearchResults:empty {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <span class="header-title">订阅配置</span>
+    </div>
+
+    <div class="container">
+        <div class="tip-card">
+            <div class="tip-title">💡 订阅说明</div>
+            <div class="tip-content">
+                每人只能订阅一个早报规则，选择您感兴趣的事件类型、行业和实体，系统将每天为您推送相关资讯早报。您可以随时修改订阅规则，也可以将早报分享给他人。
+            </div>
+        </div>
+
+        <div class="config-card">
+            <div class="section">
+                <div class="section-title">
+                    <span>📋</span>
+                    <span>事件类型</span>
+                </div>
+                <div class="tag-group" id="eventTypeGroup">
+                    <div class="tag-item selected" data-type="eventType" data-value="行业资讯">行业资讯</div>
+                    <div class="tag-item disabled" data-type="eventType" data-value="舆情">舆情（暂未开放）</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span>🏢</span>
+                    <span>行业标签</span>
+                </div>
+                <div class="tag-group" id="industryGroup">
+                    <div class="tag-item" data-type="industry" data-value="咖啡茶饮行业" onclick="toggleTag(this)">咖啡茶饮行业</div>
+                    <div class="tag-item" data-type="industry" data-value="供应链行业" onclick="toggleTag(this)">供应链行业</div>
+                    <div class="tag-item" data-type="industry" data-value="人工智能行业" onclick="toggleTag(this)">人工智能行业</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span>🏷️</span>
+                    <span>实体标签</span>
+                </div>
+                <div class="tag-group" id="entityGroup">
+                    <div class="tag-item" data-type="entity" data-value="星巴克" onclick="toggleTag(this)">星巴克</div>
+                    <div class="tag-item" data-type="entity" data-value="库迪" onclick="toggleTag(this)">库迪</div>
+                </div>
+            </div>
+
+            <div class="selected-summary" id="summary">
+                已选择：<strong>事件类型</strong> 行业资讯 | <strong>行业</strong> 未选择 | <strong>实体</strong> 未选择
+            </div>
+        </div>
+
+        <div class="config-card" style="margin-top: 20px;">
+            <div class="section">
+                <div class="section-title">
+                    <span>⏰</span>
+                    <span>推送规则</span>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 10px;">推送周期</div>
+                    <div class="tag-group">
+                        <div class="tag-item selected" data-type="cycle" data-value="daily" onclick="toggleCycle(this)">每日</div>
+                        <div class="tag-item" data-type="cycle" data-value="weekly" onclick="toggleCycle(this)">每周</div>
+                    </div>
+                </div>
+
+                <div id="weekdaySection" style="margin-bottom: 20px; display: none;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 10px;">推送日期</div>
+                    <div class="tag-group">
+                        <div class="tag-item" data-type="weekday" data-value="1" onclick="toggleWeekday(this)">周一</div>
+                        <div class="tag-item" data-type="weekday" data-value="2" onclick="toggleWeekday(this)">周二</div>
+                        <div class="tag-item" data-type="weekday" data-value="3" onclick="toggleWeekday(this)">周三</div>
+                        <div class="tag-item" data-type="weekday" data-value="4" onclick="toggleWeekday(this)">周四</div>
+                        <div class="tag-item" data-type="weekday" data-value="5" onclick="toggleWeekday(this)">周五</div>
+                        <div class="tag-item" data-type="weekday" data-value="6" onclick="toggleWeekday(this)">周六</div>
+                        <div class="tag-item" data-type="weekday" data-value="0" onclick="toggleWeekday(this)">周日</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 10px;">推送时间</div>
+                    <div class="tag-group">
+                        <div class="tag-item" data-type="time" data-value="08:00" onclick="toggleTime(this)">08:00</div>
+                        <div class="tag-item" data-type="time" data-value="08:30" onclick="toggleTime(this)">08:30</div>
+                        <div class="tag-item" data-type="time" data-value="09:00" onclick="toggleTime(this)">09:00</div>
+                        <div class="tag-item" data-type="time" data-value="09:30" onclick="toggleTime(this)">09:30</div>
+                        <div class="tag-item" data-type="time" data-value="10:00" onclick="toggleTime(this)">10:00</div>
+                        <div class="tag-item" data-type="time" data-value="10:30" onclick="toggleTime(this)">10:30</div>
+                        <div class="tag-item" data-type="time" data-value="11:00" onclick="toggleTime(this)">11:00</div>
+                        <div class="tag-item" data-type="time" data-value="11:30" onclick="toggleTime(this)">11:30</div>
+                        <div class="tag-item" data-type="time" data-value="12:00" onclick="toggleTime(this)">12:00</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                        分享人 <span style="color: #999; font-size: 12px;">(最多30人)</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <input type="text" id="userSearch" placeholder="搜索用户名..." 
+                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                            oninput="searchUsers()">
+                    </div>
+                    <div id="userSearchResults" style="margin-bottom: 10px; max-height: 200px; overflow-y: auto;"></div>
+                    <div id="selectedUsers" class="tag-group"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="cancel-btn" onclick="goBack()">取消</button>
+        <button class="confirm-btn" id="confirmBtn" onclick="confirmSubscribe()">确认订阅</button>
+    </div>
+
+    <script>
+        let selectedConfig = {
+            eventType: '行业资讯',
+            industries: [],
+            entities: [],
+            pushCycle: 'daily',
+            weekdays: [],
+            pushTime: '',
+            shareUsers: []
+        };
+
+        const mockUsers = [
+            { id: 1, name: '张三', avatar: '👨' },
+            { id: 2, name: '李四', avatar: '👩' },
+            { id: 3, name: '王五', avatar: '👨' },
+            { id: 4, name: '赵六', avatar: '👩' },
+            { id: 5, name: '孙七', avatar: '👨' },
+            { id: 6, name: '周八', avatar: '👩' },
+            { id: 7, name: '吴九', avatar: '👨' },
+            { id: 8, name: '郑十', avatar: '👩' }
+        ];
+
+        function loadExistingConfig() {
+            const savedConfig = localStorage.getItem('subscriptionConfig');
+            if (savedConfig) {
+                selectedConfig = JSON.parse(savedConfig);
+                
+                selectedConfig.industries.forEach(industry => {
+                    const element = document.querySelector(`[data-type="industry"][data-value="${industry}"]`);
+                    if (element) element.classList.add('selected');
+                });
+                
+                selectedConfig.entities.forEach(entity => {
+                    const element = document.querySelector(`[data-type="entity"][data-value="${entity}"]`);
+                    if (element) element.classList.add('selected');
+                });
+                
+                if (selectedConfig.pushCycle) {
+                    document.querySelectorAll('[data-type="cycle"]').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    const cycleEl = document.querySelector(`[data-type="cycle"][data-value="${selectedConfig.pushCycle}"]`);
+                    if (cycleEl) cycleEl.classList.add('selected');
+                    
+                    if (selectedConfig.pushCycle === 'weekly') {
+                        document.getElementById('weekdaySection').style.display = 'block';
+                        selectedConfig.weekdays.forEach(day => {
+                            const element = document.querySelector(`[data-type="weekday"][data-value="${day}"]`);
+                            if (element) element.classList.add('selected');
+                        });
+                    }
+                }
+                
+                if (selectedConfig.pushTime) {
+                    const timeEl = document.querySelector(`[data-type="time"][data-value="${selectedConfig.pushTime}"]`);
+                    if (timeEl) timeEl.classList.add('selected');
+                }
+                
+                if (selectedConfig.shareUsers && selectedConfig.shareUsers.length > 0) {
+                    renderSelectedUsers();
+                }
+                
+                updateSummary();
+            }
+        }
+
+        function toggleTag(element) {
+            if (element.classList.contains('disabled')) return;
+            
+            const type = element.dataset.type;
+            const value = element.dataset.value;
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                
+                if (type === 'industry') {
+                    selectedConfig.industries = selectedConfig.industries.filter(i => i !== value);
+                } else if (type === 'entity') {
+                    selectedConfig.entities = selectedConfig.entities.filter(e => e !== value);
+                }
+            } else {
+                element.classList.add('selected');
+                
+                if (type === 'industry') {
+                    selectedConfig.industries.push(value);
+                } else if (type === 'entity') {
+                    selectedConfig.entities.push(value);
+                }
+            }
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const industryText = selectedConfig.industries.length > 0 
+                ? selectedConfig.industries.join('、') 
+                : '未选择';
+            const entityText = selectedConfig.entities.length > 0 
+                ? selectedConfig.entities.join('、') 
+                : '未选择';
+            
+            document.getElementById('summary').innerHTML = `
+                已选择：<strong>事件类型</strong> ${selectedConfig.eventType} | 
+                <strong>行业</strong> ${industryText} | 
+                <strong>实体</strong> ${entityText}
+            `;
+            
+            const confirmBtn = document.getElementById('confirmBtn');
+            if (selectedConfig.industries.length > 0 || selectedConfig.entities.length > 0) {
+                confirmBtn.disabled = false;
+            } else {
+                confirmBtn.disabled = true;
+            }
+        }
+
+        function toggleCycle(element) {
+            document.querySelectorAll('[data-type="cycle"]').forEach(el => {
+                el.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            selectedConfig.pushCycle = element.dataset.value;
+            
+            if (selectedConfig.pushCycle === 'weekly') {
+                document.getElementById('weekdaySection').style.display = 'block';
+            } else {
+                document.getElementById('weekdaySection').style.display = 'none';
+                selectedConfig.weekdays = [];
+                document.querySelectorAll('[data-type="weekday"]').forEach(el => {
+                    el.classList.remove('selected');
+                });
+            }
+            
+            updateSummary();
+        }
+
+        function toggleWeekday(element) {
+            const value = element.dataset.value;
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedConfig.weekdays = selectedConfig.weekdays.filter(d => d !== value);
+            } else {
+                element.classList.add('selected');
+                selectedConfig.weekdays.push(value);
+            }
+            
+            updateSummary();
+        }
+
+        function toggleTime(element) {
+            document.querySelectorAll('[data-type="time"]').forEach(el => {
+                el.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            selectedConfig.pushTime = element.dataset.value;
+            updateSummary();
+        }
+
+        function searchUsers() {
+            const keyword = document.getElementById('userSearch').value.toLowerCase();
+            const resultsDiv = document.getElementById('userSearchResults');
+            
+            if (!keyword) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+            
+            const filtered = mockUsers.filter(user => 
+                user.name.toLowerCase().includes(keyword) &&
+                !selectedConfig.shareUsers.find(u => u.id === user.id)
+            );
+            
+            if (filtered.length === 0) {
+                resultsDiv.innerHTML = '<div style="padding: 10px; color: #999; font-size: 13px;">未找到用户</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = filtered.map(user => `
+                <div style="padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 10px;"
+                     onclick="addShareUser(${user.id})">
+                    <span style="font-size: 24px;">${user.avatar}</span>
+                    <span style="font-size: 14px; color: #333;">${user.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function addShareUser(userId) {
+            if (selectedConfig.shareUsers.length >= 30) {
+                alert('最多只能选择30个分享人');
+                return;
+            }
+            
+            const user = mockUsers.find(u => u.id === userId);
+            if (user && !selectedConfig.shareUsers.find(u => u.id === userId)) {
+                selectedConfig.shareUsers.push(user);
+                renderSelectedUsers();
+                document.getElementById('userSearch').value = '';
+                document.getElementById('userSearchResults').innerHTML = '';
+                updateSummary();
+            }
+        }
+
+        function removeShareUser(userId) {
+            selectedConfig.shareUsers = selectedConfig.shareUsers.filter(u => u.id !== userId);
+            renderSelectedUsers();
+            updateSummary();
+        }
+
+        function renderSelectedUsers() {
+            const container = document.getElementById('selectedUsers');
+            if (selectedConfig.shareUsers.length === 0) {
+                container.innerHTML = '<div style="color: #999; font-size: 13px;">暂无分享人</div>';
+                return;
+            }
+            
+            container.innerHTML = selectedConfig.shareUsers.map(user => `
+                <div class="tag-item selected" style="display: flex; align-items: center; gap: 6px;">
+                    <span>${user.avatar}</span>
+                    <span>${user.name}</span>
+                    <span onclick="removeShareUser(${user.id}); event.stopPropagation();" 
+                          style="cursor: pointer; margin-left: 4px;">×</span>
+                </div>
+            `).join('');
+        }
+
+        function confirmSubscribe() {
+            if (selectedConfig.industries.length === 0 && selectedConfig.entities.length === 0) {
+                alert('请至少选择一个行业标签或实体标签');
+                return;
+            }
+            
+            if (!selectedConfig.pushTime) {
+                alert('请选择推送时间');
+                return;
+            }
+            
+            if (selectedConfig.pushCycle === 'weekly' && selectedConfig.weekdays.length === 0) {
+                alert('请至少选择一个推送日期');
+                return;
+            }
+            
+            localStorage.setItem('subscriptionConfig', JSON.stringify(selectedConfig));
+            localStorage.setItem('hasSubscription', 'true');
+            
+            let message = '订阅成功！\n\n您的早报订阅规则已更新：\n' +
+                  `事件类型：${selectedConfig.eventType}\n` +
+                  `行业：${selectedConfig.industries.join('、') || '未选择'}\n` +
+                  `实体：${selectedConfig.entities.join('、') || '未选择'}\n` +
+                  `推送周期：${selectedConfig.pushCycle === 'daily' ? '每日' : '每周'}\n`;
+            
+            if (selectedConfig.pushCycle === 'weekly') {
+                const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const selectedDays = selectedConfig.weekdays.map(d => dayNames[parseInt(d)]).join('、');
+                message += `推送日期：${selectedDays}\n`;
+            }
+            
+            message += `推送时间：${selectedConfig.pushTime}\n`;
+            
+            if (selectedConfig.shareUsers.length > 0) {
+                message += `分享人：${selectedConfig.shareUsers.map(u => u.name).join('、')}`;
+            }
+            
+            alert(message);
+            
+            window.location.href = '早报.html';
+        }
+
+        function goBack() {
+            window.location.href = '早报.html';
+        }
+
+        loadExistingConfig();
+        renderSelectedUsers();
+        updateSummary();
+    </script>
+</body>
+</html>

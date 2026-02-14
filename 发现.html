@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发现 - 资讯首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f6f8;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .hot-search {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hot-search-label {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .hot-tag {
+            padding: 6px 14px;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hot-tag:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 300px;
+        }
+
+        .news-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-header h2 {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .sort-info {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .news-item {
+            padding: 20px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .news-item:hover {
+            background: #fafafa;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-title {
+            font-size: 17px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .news-title mark {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .news-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-industry {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tag-entity {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .tag mark {
+            background: #fff3cd;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .news-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .news-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .news-content mark {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .hot-articles {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+
+        .hot-articles h3 {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .hot-article-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hot-article-item:hover {
+            padding-left: 8px;
+        }
+
+        .hot-article-item:last-child {
+            border-bottom: none;
+        }
+
+        .hot-article-rank {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .rank-1, .rank-2, .rank-3 {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .rank-other {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        .hot-article-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .hot-article-views {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-decoration: none;
+            color: #999;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 发现</h1>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索文章标题、标签、内容...">
+                <button class="search-btn" onclick="performSearch()">搜索</button>
+            </div>
+            <div class="hot-search">
+                <span class="hot-search-label">🔥 热门搜索：</span>
+                <span class="hot-tag" onclick="searchByTag('咖啡茶饮行业')">咖啡茶饮行业</span>
+                <span class="hot-tag" onclick="searchByTag('星巴克')">星巴克</span>
+                <span class="hot-tag" onclick="searchByTag('供应链')">供应链</span>
+                <span class="hot-tag" onclick="searchByTag('人工智能')">人工智能</span>
+                <span class="hot-tag" onclick="searchByTag('库迪')">库迪</span>
+                <span class="hot-tag" onclick="searchByTag('舆情')">舆情</span>
+                <span class="hot-tag" onclick="searchByTag('行业资讯')">行业资讯</span>
+                <span class="hot-tag" onclick="searchByTag('新品发布')">新品发布</span>
+                <span class="hot-tag" onclick="searchByTag('市场分析')">市场分析</span>
+                <span class="hot-tag" onclick="searchByTag('竞争态势')">竞争态势</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="news-list">
+                    <div class="list-header">
+                        <h2>全部资讯</h2>
+                        <span class="sort-info">按发布时间排序</span>
+                    </div>
+                    <div id="newsListContent">
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="hot-articles">
+                    <h3>🔥 热门文章 TOP20</h3>
+                    <div id="hotArticlesContent">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchPage('discover')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-label">发现</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('morning')">
+            <div class="nav-icon">📰</div>
+            <div class="nav-label">早报</div>
+        </button>
+        <button class="nav-item" onclick="switchPage('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">设置</div>
+        </button>
+    </div>
+
+    <script>
+        const newsData = [
+            {
+                id: 1,
+                title: '星巴克推出春季限定新品，咖啡茶饮市场竞争加剧',
+                industry: '咖啡茶饮行业',
+                entity: '星巴克',
+                media: '财经日报',
+                publishTime: '2026-02-14 10:30',
+                content: '星巴克今日宣布推出春季限定系列新品，包括多款创新饮品。此举被视为应对市场竞争的重要策略，业内人士认为这将进一步推动咖啡茶饮行业的创新发展...',
+                views: 1580
+            },
+            {
+                id: 2,
+                title: '库迪咖啡完成新一轮融资，加速全国扩张步伐',
+                industry: '咖啡茶饮行业',
+                entity: '库迪',
+                media: '投资界',
+                publishTime: '2026-02-14 09:15',
+                content: '库迪咖啡宣布完成新一轮数亿元融资，本轮融资将主要用于门店扩张和供应链建设。公司计划在未来一年内新开1000家门店，进一步提升市场占有率...',
+                views: 2340
+            },
+            {
+                id: 3,
+                title: '人工智能技术赋能咖啡行业，智能化成为新趋势',
+                industry: '人工智能行业',
+                entity: '星巴克',
+                media: '科技前沿',
+                publishTime: '2026-02-14 08:45',
+                content: '人工智能技术正在深刻改变咖啡行业的运营模式。从智能点单到个性化推荐，从供应链优化到门店管理，AI技术的应用大幅提升了运营效率和客户体验...',
+                views: 980
+            },
+            {
+                id: 4,
+                title: '供应链行业迎来数字化转型浪潮，效率提升显著',
+                industry: '供应链行业',
+                entity: '库迪',
+                media: '物流时报',
+                publishTime: '2026-02-13 16:20',
+                content: '随着数字化技术的深入应用，供应链行业正经历着深刻变革。智能仓储、自动化配送等新技术的应用，使得供应链效率大幅提升，成本显著降低...',
+                views: 1120
+            },
+            {
+                id: 5,
+                title: '咖啡茶饮行业2026年市场分析报告发布',
+                industry: '咖啡茶饮行业',
+                entity: '星巴克',
+                media: '行业研究院',
+                publishTime: '2026-02-13 14:30',
+                content: '最新市场分析报告显示，咖啡茶饮行业持续保持高速增长态势。预计2026年市场规模将突破5000亿元，年增长率达到15%以上。行业竞争日趋激烈...',
+                views: 3200
+            },
+            {
+                id: 6,
+                title: '星巴克与库迪展开激烈竞争，市场格局或将重塑',
+                industry: '咖啡茶饮行业',
+                entity: '星巴克',
+                media: '商业观察',
+                publishTime: '2026-02-13 11:50',
+                content: '在咖啡市场上，星巴克和库迪的竞争愈发激烈。两家企业在产品创新、价格策略、门店布局等多个维度展开全方位竞争，市场格局面临重塑...',
+                views: 2800
+            },
+            {
+                id: 7,
+                title: '人工智能在餐饮行业的应用案例分析',
+                industry: '人工智能行业',
+                entity: '库迪',
+                media: '技术周刊',
+                publishTime: '2026-02-12 15:30',
+                content: '人工智能技术在餐饮行业的应用越来越广泛。通过机器学习算法分析消费者偏好，实现精准营销；利用计算机视觉技术优化食品制作流程...',
+                views: 750
+            },
+            {
+                id: 8,
+                title: '供应链金融创新助力中小企业发展',
+                industry: '供应链行业',
+                entity: '星巴克',
+                media: '金融时报',
+                publishTime: '2026-02-12 10:20',
+                content: '供应链金融作为创新金融服务模式，正在为中小企业解决融资难题。通过整合供应链上下游资源，为企业提供更加便捷高效的金融服务...',
+                views: 1450
+            }
+        ];
+
+        let filteredNews = [...newsData];
+        let currentSearchTerm = '';
+
+        function highlightText(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        function renderNewsList() {
+            const container = document.getElementById('newsListContent');
+            
+            if (filteredNews.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无相关资讯</div>';
+                return;
+            }
+
+            container.innerHTML = filteredNews.map(news => `
+                <div class="news-item" onclick="viewDetail(${news.id})">
+                    <div class="news-title">${highlightText(news.title, currentSearchTerm)}</div>
+                    <div class="news-tags">
+                        <span class="tag tag-industry">${highlightText(news.industry, currentSearchTerm)}</span>
+                        <span class="tag tag-entity">${highlightText(news.entity, currentSearchTerm)}</span>
+                    </div>
+                    <div class="news-meta">
+                        <span class="news-meta-item">📰 ${news.media}</span>
+                        <span class="news-meta-item">🕐 ${news.publishTime}</span>
+                    </div>
+                    <div class="news-content">${highlightText(truncateText(news.content, 50), currentSearchTerm)}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderHotArticles() {
+            const container = document.getElementById('hotArticlesContent');
+            const sortedNews = [...newsData].sort((a, b) => b.views - a.views).slice(0, 20);
+            
+            container.innerHTML = sortedNews.map((news, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+                return `
+                    <div class="hot-article-item" onclick="viewDetail(${news.id})">
+                        <span class="hot-article-rank ${rankClass}">${rank}</span>
+                        <span class="hot-article-title">${truncateText(news.title, 30)}</span>
+                        <div class="hot-article-views">👁 ${news.views} 次浏览</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            currentSearchTerm = searchTerm;
+            
+            if (!searchTerm) {
+                filteredNews = [...newsData];
+            } else {
+                filteredNews = newsData.filter(news => {
+                    const titleMatch = news.title.toLowerCase().includes(searchTerm.toLowerCase());
+                    const tagMatch = news.industry.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                    news.entity.toLowerCase().includes(searchTerm.toLowerCase());
+                    const contentMatch = news.content.toLowerCase().includes(searchTerm.toLowerCase());
+                    
+                    return titleMatch || tagMatch || contentMatch;
+                }).sort((a, b) => {
+                    const aTitle = a.title.toLowerCase().includes(searchTerm.toLowerCase());
+                    const bTitle = b.title.toLowerCase().includes(searchTerm.toLowerCase());
+                    const aTag = a.industry.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                a.entity.toLowerCase().includes(searchTerm.toLowerCase());
+                    const bTag = b.industry.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                b.entity.toLowerCase().includes(searchTerm.toLowerCase());
+                    
+                    if (aTitle && !bTitle) return -1;
+                    if (!aTitle && bTitle) return 1;
+                    if (aTag && !bTag) return -1;
+                    if (!aTag && bTag) return 1;
+                    
+                    return new Date(b.publishTime) - new Date(a.publishTime);
+                });
+            }
+            
+            renderNewsList();
+        }
+
+        function searchByTag(tag) {
+            document.getElementById('searchInput').value = tag;
+            performSearch();
+        }
+
+        function viewDetail(id) {
+            const news = newsData.find(n => n.id === id);
+            if (news) {
+                news.views++;
+                window.location.href = `详情页.html?id=${id}`;
+            }
+        }
+
+        function switchPage(page) {
+            if (page === 'morning') {
+                window.location.href = '早报.html';
+            } else if (page === 'settings') {
+                window.location.href = '管理员配置.html';
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        renderNewsList();
+        renderHotArticles();
+    </script>
+</body>
+</html>
